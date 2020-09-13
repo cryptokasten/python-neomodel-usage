@@ -1,0 +1,73 @@
+#+TITLE: Python neomodel usage
+#+TAGS: cryptokasten, neo4j, python, neomodel
+#+PROPERTY: header-args:sh :session *shell python-neomodel-usage sh* :results silent raw
+#+PROPERTY: header-args:python :session *shell python-neomodel-usage python* :results silent raw
+#+OPTIONS: ^:nil
+
+[[https://github.com/cryptokasten][file:https://img.shields.io/badge/dynamic/json.svg?url=https://api.github.com/users/cryptokasten&label=Cryptokasten&query=$.public_repos]]
+
+** System environment
+
+- Neo4j version 3.5
+
+- Python 3.7.4
+
+Python modules:
+
+- neomodel==3.3.2
+
+** Install neomodel
+
+#+BEGIN_SRC sh
+pip install neomodel
+#+END_SRC
+
+** Imports
+
+#+BEGIN_SRC python
+from neomodel import StructuredNode, StringProperty, RelationshipTo, RelationshipFrom, config
+#+END_SRC
+
+** Creds
+
+#+BEGIN_SRC python
+config.DATABASE_URL = 'bolt://user:password@127.0.0.1:7687'
+config.ENCRYPTED_CONNECTION = False
+#+END_SRC
+
+** Book class
+
+#+BEGIN_SRC python
+class Book(StructuredNode):
+    title = StringProperty(unique_index=True)
+    author = RelationshipTo('Author', 'AUTHOR')
+#+END_SRC
+
+** Author class
+
+#+BEGIN_SRC python
+class Author(StructuredNode):
+    name = StringProperty(unique_index=True)
+    books = RelationshipFrom('Book', 'AUTHOR')
+#+END_SRC
+
+** Add data
+
+#+BEGIN_SRC python
+harry_potter = Book(title='Harry potter and the..').save()
+#+END_SRC
+
+#+BEGIN_SRC python
+rowling = Author(name='J. K. Rowling').save()
+#+END_SRC
+
+#+BEGIN_SRC python
+harry_potter.author.connect(rowling)
+#+END_SRC
+
+** References
+
+1. https://neo4j.com/developer/python/
+
+2. https://github.com/neo4j-contrib/neomodel
+
